@@ -5116,7 +5116,7 @@ for U in boxedunions
 
         A = Array{U}(ntuple(x->10, N)...)
         @test length(A) == 10^N
-        @test Core.sizeof(A) == 8 * (10^N)
+        @test Core.sizeof(A) == sizeof(Int) * (10^N)
         @test !isassigned(A, 1)
     end
 end
