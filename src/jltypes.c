@@ -388,6 +388,43 @@ static void flatten_type_union(jl_value_t **types, size_t n, jl_value_t **out, s
     }
 }
 
+int union_sort_cmp(const void *ap, const void *bp)
+{
+    jl_value_t *a = *(jl_value_t**)ap;
+    jl_value_t *b = *(jl_value_t**)bp;
+    if (a == NULL)
+        return b == NULL ? 0 : 1;
+    if (b == NULL)
+        return -1;
+    if (jl_is_datatype(a)) {
+        if (!jl_is_datatype(b))
+            return -1;
+        if (jl_is_datatype_singleton((jl_datatype_t*)a)) {
+            if (jl_is_datatype_singleton((jl_datatype_t*)b)) {
+                return strcmp(jl_typename_str(a), jl_typename_str(b));
+            }
+            return -1;
+        }
+        else if (jl_is_datatype_singleton((jl_datatype_t*)b)) {
+            return 1;
+        }
+        else {
+            const char *aty = jl_typename_str(a);
+            const char *bty = jl_typename_str(b);
+            return aty == NULL ? 1 : bty == NULL ? -1 : strcmp(aty, bty);
+        }
+    }
+    else {
+        // a is UnionAll
+        if (jl_is_datatype(b))
+            return 1;
+        const char *aty = jl_typename_str(jl_unwrap_unionall(a));
+        const char *bty = jl_typename_str(jl_unwrap_unionall(b));
+        return aty == NULL ? 1 : bty == NULL ? -1 : strcmp(aty, bty);
+        return -1;
+    }
+}
+
 JL_DLLEXPORT jl_value_t *jl_type_union(jl_value_t **ts, size_t n)
 {
     if (n == 0) return (jl_value_t*)jl_bottom_type;
@@ -419,6 +456,7 @@ JL_DLLEXPORT jl_value_t *jl_type_union(jl_value_t **ts, size_t n)
             }
         }
     }
+    qsort(temp, nt, sizeof(jl_value_t*), union_sort_cmp);
     jl_value_t **ptu = &temp[nt];
     *ptu = jl_bottom_type;
     int k;

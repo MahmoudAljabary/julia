@@ -5075,3 +5075,21 @@ f_isdefined_cl_6() = (local x; () -> @isdefined x)
 @test !f_isdefined_cl_4()
 @test f_isdefined_cl_5()()
 @test !f_isdefined_cl_6()()
+
+# Union type sorting
+for T in (
+        (Void, Int8),
+        (Void, Int64),
+        (Void, Tuple{Int64, String}),
+        (Void, Array),
+        (Float64, Int64),
+        (Float64, String),
+        (Float64, Array),
+        (String, Array),
+        (Int64, Tuple{Int64, Float64}),
+        (Tuple{Int64, Float64}, Array)
+    )
+    @test Base.uniontypes(Union{T...}) == collect(T)
+    @test Base.uniontypes(Union{reverse(T)...}) == collect(T)
+end
+@test Base.uniontypes(Union{Void, Union{Int64, Float64}}) == Any[Void, Float64, Int64]
