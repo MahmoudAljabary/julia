@@ -1587,6 +1587,8 @@ end
 @deprecate readstring(cmd::AbstractCmd, stdin::Redirectable) readstring(pipeline(stdin, cmd))
 @deprecate eachline(cmd::AbstractCmd, stdin; chomp::Bool=true) eachline(pipeline(stdin, cmd), chomp=chomp)
 
+@deprecate String(io::AbstractIOBuffer) String(take!(copy(io)))
+
 # END 0.7 deprecations
 
 # BEGIN 1.0 deprecations

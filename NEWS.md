@@ -175,6 +175,8 @@ Deprecated or removed
   * The forms of `read`, `readstring`, and `eachline` that accepted both a `Cmd` object and an
     input stream are deprecated. Use e.g. `read(pipeline(stdin, cmd))` instead ([#22762]).
 
+  * The method `String(io::IOBuffer)` is deprecated to `String(take!(copy(io)))` ([#21438]).
+
 
 Julia v0.6.0 Release Notes
 ==========================

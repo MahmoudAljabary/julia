@@ -301,7 +301,7 @@ let d = Dict((1=>2) => (3=>45), (3=>10) => (10=>11))
 
     # Check explicitly for the expected strings, since the CPU bitness effects
     # dictionary ordering.
-    result = String(buf)
+    result = String(take!(buf))
     @test contains(result, "Dict")
     @test contains(result, "(1=>2)=>(3=>45)")
     @test contains(result, "(3=>10)=>(10=>11)")
